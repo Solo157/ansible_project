@@ -1,0 +1,9 @@
+---
+- name: Deploy with docker compose
+  shell: |
+    docker compose down
+    docker compose up -d --pull always
+  args:
+    chdir: /opt/app
+  environment:
+    DOCKER_IMAGE: "{{ docker_image }}"

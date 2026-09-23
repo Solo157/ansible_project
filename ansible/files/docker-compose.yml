@@ -1,0 +1,6 @@
+services:
+  app:
+    image: ${DOCKER_IMAGE}
+    restart: always
+    ports:
+      - "8080:80"
