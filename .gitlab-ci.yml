@@ -5,7 +5,7 @@ deploy_dev:
   image: alpine/ansible:latest
   stage: deploy_dev
   before_script:
-    - apt-get update && apt-get install -y openssh-client sshpass
+    - apk add --no-cache openssh-client sshpass
     - ssh-keyscan -H "${DEPLOY_DEV_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
     - ssh-keyscan -H "${DEPLOY_PROD_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
   script:
