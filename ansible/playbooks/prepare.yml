@@ -1,6 +1,0 @@
----
-- hosts: app
-  become: true
-  roles:
-    - docker
-    - app

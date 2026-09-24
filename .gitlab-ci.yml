@@ -1,37 +1,17 @@
 stages:
-  - prepare_dev
   - deploy_dev
 
-prepare_dev:
-  image: ansible/ansible:stable-2.15
-  stage: prepare_dev
-  before_script:
-    - |
-      SSH_KEY="${SSH_KEY}"
-    - apt-get update && apt-get install -y curl jq openssh-client
-    - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H "${DEPLOY_DEV_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
-  script:
-    - |
-      ANSIBLE_ROLES_PATH=ansible/roles ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/prepare.yml
-
 deploy_dev:
-  image: ansible/ansible:stable-2.15
+  image: ansible/ansible:ubuntu1404
   stage: deploy_dev
-  needs: [prepare_dev]
   before_script:
     - |
-      SSH_KEY="${SSH_KEY}"
-    - apt-get update && apt-get install -y curl jq openssh-client
-    - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H "${DEPLOY_DEV_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+      apt-get update && apt-get install -y openssh-client sshpass
   script:
     - |
-      ANSIBLE_ROLES_PATH=ansible/roles ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/deploy.yml --extra-vars "
+      ANSIBLE_ROLES_PATH=ansible/roles \ 
+      ANSIBLE_HOST_KEY_CHECKING=False \
+      ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/deploy.yml --extra-vars "
         docker_image=nginx:mainline-alpine3.24-slim"
   tags:
     - simple-runner

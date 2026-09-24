@@ -1,3 +1,30 @@
+2. Выполнить 2 этапа: поднять VM для dev, prod, vault заполнить переменные в gitlab.
+   Этап 1. Поднятие виртуальных машин в YC
+   Выполнить скрипт из корня проекта: . ./script-for-VMs.sh
+   Этап 2. Заполнение переменных GitLab
+   DEPLOY_DEV_HOST - IP виртуалки DEV
+   DEPLOY_PROD_HOST - IP виртуалки PROD
+   DEPLOY_USER - ubuntu
+   VAULT_ADDR - IP виртуалки VAULT
+
+Выполнить настройку виртуальных машин с помощью ansible:
+1. Подготовка DEV VM
+   ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/prepare.yml \
+   -e "ansible_host=$DEVELOP_HOST_IP" \
+   -e "ansible_user=ubuntu" \
+   -e "ansible_ssh_private_key_file=${HOME}/.ssh/my_otus_id_rsa_cicd_vms"
+
+
+
+
+
+
+
+
+
+
+
+
 # anisible_project
 
 
