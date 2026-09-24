@@ -1,8 +1,6 @@
 ---
 - hosts: app
   become: true
-  become_method: sudo
-  become_password: "{{ lookup('env', 'DEPLOY_PASSWD') }}"
   roles:
     - docker
     - app
