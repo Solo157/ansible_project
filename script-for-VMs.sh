@@ -85,36 +85,7 @@ EOF
   --network-interface subnet-name=$EXTERNAL_SUBNET,nat-ip-version=ipv4,nat-address=$PROD_HOST_IP,security-group-ids=$SG_ID \
   --hostname prod-host
 
-
-# create static public IP for VAULT VM
-#if yc vpc address list | grep -q vault-public-ip; then
-#  echo "Public IP already exists, skip creation"
-#else
-#  echo "create static public IP"
-#  yc vpc address create --name vault-public-ip --external-ipv4 zone=$ZONE
-#fi
-
-# create virt machine for VAULT VM
-#export VAULT_HOST_IP=$(yc vpc address get vault-public-ip --format json | jq -r '.external_ipv4_address.address')
-#yc compute instance create \
-#  --name vault-host \
-#  --zone $ZONE \
-#  --preemptible \
-#  --core-fraction 20 \
-#  --metadata-from-file user-data=<(cat <<EOF
-##cloud-config
-#users:
-#  - name: ubuntu
-#    sudo: ALL=(ALL) NOPASSWD:ALL
-#    ssh-authorized-keys:
-#      - $(cat ~/.ssh/my_otus_id_rsa_cicd_vms.pub)
-#EOF
-#) \
-#  --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
-#  --network-interface subnet-name=$EXTERNAL_SUBNET,nat-ip-version=ipv4,nat-address=$VAULT_HOST_IP,security-group-ids=$SG_ID \
-#  --hostname vault-host
-
-# waiting.. until VMs are ready
+waiting.. until VMs are ready
 sleep 30
 
 command -v sshpass >/dev/null || { echo "sshpass is required (apt-get install sshpass)"; exit 1; }
@@ -132,11 +103,3 @@ if [ "$PROD_HOST_USER" = "ubuntu" ]; then
 else
   echo "ERROR: password login failed on PROD_HOST"
 fi
-
-#ssh-keyscan -H $VAULT_HOST_IP >> ~/.ssh/known_hosts
-#VAULT_HOST_USER=$(ssh -i ~/.ssh/my_otus_id_rsa_cicd_vms -o IdentitiesOnly=yes ubuntu@$VAULT_HOST_IP "whoami")
-#if [ "$VAULT_HOST_USER" = "ubuntu" ]; then
-#  echo "OK: user is ubuntu on VAULT_HOST"
-#else
-#  echo "ERROR: wrong user for VAULT_HOST"
-#fi
