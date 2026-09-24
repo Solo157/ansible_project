@@ -28,7 +28,6 @@ yc compute instance create \
   --core-fraction 20 \
   --metadata-from-file user-data=<(cat <<EOF
 #cloud-config
-#cloud-config
 users:
   - name: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -104,20 +103,20 @@ EOF
 # waiting.. until VMs are ready
 sleep 30
 
-ssh-keyscan -H $DEVELOP_HOST_IP >> ~/.ssh/known_hosts
-DEVELOP_HOST_USER=$(ssh -i ~/.ssh/my_otus_id_rsa_cicd_vms -o IdentitiesOnly=yes ubuntu@$DEVELOP_HOST_IP "whoami")
+command -v sshpass >/dev/null || { echo "sshpass is required (apt-get install sshpass)"; exit 1; }
+
+DEVELOP_HOST_USER=$(sshpass -p "$VM_USER_PASSWD" ssh -o StrictHostKeyChecking=no ubuntu@$DEVELOP_HOST_IP "whoami")
 if [ "$DEVELOP_HOST_USER" = "ubuntu" ]; then
-  echo "OK: user is ubuntu on DEVELOP_HOST"
+  echo "OK: password login works on DEVELOP_HOST"
 else
-  echo "ERROR: wrong user for DEVELOP_HOST"
+  echo "ERROR: password login failed on DEVELOP_HOST"
 fi
 
-ssh-keyscan -H $PROD_HOST_IP >> ~/.ssh/known_hosts
-PROD_HOST_USER=$(ssh -i ~/.ssh/my_otus_id_rsa_cicd_vms -o IdentitiesOnly=yes ubuntu@$PROD_HOST_IP "whoami")
+PROD_HOST_USER=$(sshpass -p "$VM_USER_PASSWD" ssh -o StrictHostKeyChecking=no ubuntu@$PROD_HOST_IP "whoami")
 if [ "$PROD_HOST_USER" = "ubuntu" ]; then
-  echo "OK: user is ubuntu on PROD_HOST"
+  echo "OK: password login works on PROD_HOST"
 else
-  echo "ERROR: wrong user for PROD_HOST"
+  echo "ERROR: password login failed on PROD_HOST"
 fi
 
 #ssh-keyscan -H $VAULT_HOST_IP >> ~/.ssh/known_hosts

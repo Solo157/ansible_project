@@ -6,8 +6,7 @@ deploy_dev:
   stage: deploy_dev
   before_script:
     - apk add --no-cache openssh-client sshpass
-    - ssh-keyscan -H "${DEPLOY_DEV_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
-    - ssh-keyscan -H "${DEPLOY_PROD_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+    - test -n "$DEPLOY_PASSWD" || { echo "DEPLOY_PASSWD is not set in CI variables"; exit 1; }
   script:
     - |
       ANSIBLE_ROLES_PATH=ansible/roles \
