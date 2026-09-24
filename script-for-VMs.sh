@@ -28,10 +28,13 @@ yc compute instance create \
   --core-fraction 20 \
   --metadata-from-file user-data=<(cat <<EOF
 #cloud-config
+#cloud-config
 users:
   - name: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     plain_text_passwd: '$VM_USER_PASSWD'
+    lock_passwd: false
+ssh_pwauth: true
 EOF
 ) \
   --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
@@ -61,6 +64,8 @@ users:
   - name: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     plain_text_passwd: '$VM_USER_PASSWD'
+    lock_passwd: false
+ssh_pwauth: true
 EOF
 ) \
   --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
