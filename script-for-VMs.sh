@@ -28,29 +28,19 @@ yc compute instance create \
   --core-fraction 20 \
   --metadata-from-file user-data=<(cat <<EOF
 #cloud-config
-
+datasource:
+  Ec2:
+    strict_id: false
+ssh_pwauth: true
 users:
   - name: ubuntu
-    gecos: Ubuntu
-    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo
     shell: /bin/bash
-    lock_passwd: false
-    plain_text_passwd: 'otus'
-
-ssh_pwauth: true
-
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
 chpasswd:
+  list: |
+    ubuntu:$VM_USER_PASSWD
   expire: false
-
-write_files:
-  - path: /etc/ssh/sshd_config.d/99-password-auth.conf
-    permissions: '0644'
-    content: |
-      PasswordAuthentication yes
-      KbdInteractiveAuthentication yes
-
-runcmd:
-  - systemctl restart ssh
 EOF
 ) \
   --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
@@ -76,12 +66,19 @@ yc compute instance create \
   --core-fraction 20 \
   --metadata-from-file user-data=<(cat <<EOF
 #cloud-config
+datasource:
+  Ec2:
+    strict_id: false
+ssh_pwauth: true
 users:
   - name: ubuntu
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    plain_text_passwd: '$VM_USER_PASSWD'
-    lock_passwd: false
-ssh_pwauth: true
+    groups: sudo
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+chpasswd:
+  list: |
+    ubuntu:$VM_USER_PASSWD
+  expire: false
 EOF
 ) \
   --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
