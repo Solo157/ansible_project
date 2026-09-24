@@ -2,9 +2,7 @@ stages:
   - deploy_dev
 
 deploy_dev:
-  image:
-    name: willhallonline/ansible:2.19-debian-trixie
-    user: root
+  image: alpine/ansible:latest
   stage: deploy_dev
   before_script:
     - apt-get update && apt-get install -y openssh-client sshpass
