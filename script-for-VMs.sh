@@ -23,21 +23,38 @@ fi
 export DEVELOP_HOST_IP=$(yc vpc address get develop-public-ip --format json | jq -r '.external_ipv4_address.address')
 yc compute instance create \
   --name develop-host \
-  --zone $ZONE \
+  --zone "$ZONE" \
   --preemptible \
   --core-fraction 20 \
   --metadata-from-file user-data=<(cat <<EOF
 #cloud-config
+
 users:
   - name: ubuntu
+    gecos: Ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
-    plain_text_passwd: '$VM_USER_PASSWD'
+    shell: /bin/bash
     lock_passwd: false
+    plain_text_passwd: 'otus'
+
 ssh_pwauth: true
+
+chpasswd:
+  expire: false
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-password-auth.conf
+    permissions: '0644'
+    content: |
+      PasswordAuthentication yes
+      KbdInteractiveAuthentication yes
+
+runcmd:
+  - systemctl restart ssh
 EOF
 ) \
   --create-boot-disk image-id=fd8dcjve5vsdhbqs6nqj \
-  --network-interface subnet-name=$EXTERNAL_SUBNET,nat-ip-version=ipv4,nat-address=$DEVELOP_HOST_IP,security-group-ids=$SG_ID \
+  --network-interface subnet-name="$EXTERNAL_SUBNET",nat-ip-version=ipv4,nat-address="$DEVELOP_HOST_IP",security-group-ids="$SG_ID" \
   --hostname develop-host
 
 
