@@ -5,13 +5,12 @@ deploy_dev:
   image: willhallonline/ansible:2.19-debian-trixie
   stage: deploy_dev
   before_script:
-    - |
-      apt-get update && apt-get install -y openssh-client sshpass
+    - apt-get update && apt-get install -y openssh-client sshpass
   script:
     - |
-      ANSIBLE_ROLES_PATH=ansible/roles \ 
+      ANSIBLE_ROLES_PATH=ansible/roles \
       ANSIBLE_HOST_KEY_CHECKING=False \
-      ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/deploy.yml --extra-vars "
-        docker_image=nginx:mainline-alpine3.24-slim"
+      ansible-playbook -i ansible/inventory/dev.yaml ansible/playbooks/deploy.yml \
+        --extra-vars "docker_image=nginx:mainline-alpine3.24-slim"
   tags:
     - simple-runner
