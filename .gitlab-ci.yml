@@ -17,7 +17,8 @@ deploy_dev:
       ansible-playbook \
         -i ansible/inventory/dev.yaml \
         ansible/playbooks/deploy.yml \
-        --extra-vars "docker_image=nginx:mainline-alpine3.24-slim"
+        --extra-vars "docker_image=nginx:mainline-alpine3.24-slim" \
+      -vvv
 
   tags:
     - simple-runner
