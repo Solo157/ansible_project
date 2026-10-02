@@ -1,0 +1,3 @@
+nginx_port: 80
+nginx_back_host: localhost
+nginx_back_port: 8080

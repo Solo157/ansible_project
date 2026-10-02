@@ -1,15 +1,3 @@
----
-- name: Create application directory
-  file:
-    path: /opt/app
-    state: directory
-    owner: ubuntu
-    group: ubuntu
-    mode: "0755"
-
-- name: Copy docker compose
-  copy:
-    src: ../../files/docker-compose.yml
-    dest: /opt/app/docker-compose.yml
-    owner: ubuntu
-    group: ubuntu
+- import_tasks: appdirectory.yml
+- import_tasks: nginx-conf.yml
+- import_tasks: compose.yml

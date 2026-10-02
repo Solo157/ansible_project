@@ -1,0 +1,6 @@
+- name: Copy docker compose
+  copy:
+    src: ../../files/docker-compose.yml
+    dest: /opt/app/docker-compose.yml
+    owner: ubuntu
+    group: ubuntu
