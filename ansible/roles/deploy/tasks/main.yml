@@ -7,3 +7,10 @@
     chdir: /opt/app
   environment:
     DOCKER_IMAGE: "{{ docker_image }}"
+
+- name: Check app services exists
+  community.docker.docker_compose_v2:
+    project_src: /opt/app
+    state: present
+    services:
+      - app

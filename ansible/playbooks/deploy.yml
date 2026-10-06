@@ -2,6 +2,6 @@
 - hosts: app
   become: true
   roles:
-    - docker
-    - app
-    - deploy
+    - role: geerlingguy.docker
+    - role: app
+    - role: deploy
