@@ -1,3 +1,5 @@
 nginx_port: 80
 nginx_back_host: localhost
 nginx_back_port: 8080
+docker_users:
+  - "{{ ansible_user }}"
