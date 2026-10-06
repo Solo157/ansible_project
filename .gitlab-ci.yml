@@ -1,24 +1,48 @@
 stages:
-  - deploy_dev
+  - deploy
 
-deploy_dev:
+.deploy_template:
   image: alpine/ansible:latest
-  stage: deploy_dev
-
+  stage: deploy
+  variables:
+    ANSIBLE_VAULT_PASSWORD_FILE: "/tmp/vault_password"
+    INVENTORY: "ansible/inventory"
   before_script:
     - apk add --no-cache openssh-client sshpass
-    - test -n "$DEPLOY_PASSWD" || { echo "DEPLOY_PASSWD is not set"; exit 1; }
-    - sshpass -p "$DEPLOY_PASSWD" ssh -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no "$DEPLOY_USER@$DEPLOY_DEV_HOST" "echo SSH_LOGIN_OK"
-
+    - printf '%s\n' "$ANSIBLE_VAULT_PASSWORD" > "$ANSIBLE_VAULT_PASSWORD_FILE"
+    - chmod 600 "$ANSIBLE_VAULT_PASSWORD_FILE"
   script:
     - |
+      sshpass -p "$DEPLOY_PASSWD" ssh \
+        -o StrictHostKeyChecking=no \
+        -o PreferredAuthentications=password \
+        -o PubkeyAuthentication=no \
+        "$DEPLOY_USER@$DEPLOY_HOST" \
+        "echo SSH_LOGIN_OK"
+
+      ansible-galaxy install \
+        -r ansible/requirements.yml \
+        -p ansible/roles
+
       ANSIBLE_ROLES_PATH=ansible/roles \
       ANSIBLE_HOST_KEY_CHECKING=False \
       ansible-playbook \
-        -i ansible/inventory/dev.yaml \
+        -i "$INVENTORY" \
+        --limit "$LIMIT" \
         ansible/playbooks/deploy.yml \
-        --extra-vars "docker_image=nginx:mainline-alpine3.24-slim" \
-      -vvv
-
+        --extra-vars "docker_image=nginx:mainline-alpine3.24-slim"
+  when: manual
   tags:
     - simple-runner
+
+deploy_dev:
+  extends: .deploy_template
+  variables:
+    DEPLOY_HOST: "$DEPLOY_DEV_HOST"
+    LIMIT: "dev"
+
+deploy_prod:
+  extends: .deploy_template
+  variables:
+    DEPLOY_HOST: "$DEPLOY_PROD_HOST"
+    LIMIT: "prod"

@@ -5,3 +5,8 @@
     owner: ubuntu
     group: ubuntu
     mode: "0755"
+
+- name: Check app directory exists
+  ansible.builtin.file:
+    path: /opt/app
+    state: directory
